@@ -4,6 +4,8 @@
 #
 # See documentation in:
 # https://doc.scrapy.org/en/latest/topics/spider-middleware.html
+import base64
+import random
 
 from scrapy import signals
 
@@ -101,3 +103,25 @@ class ScrapydemoDownloaderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+
+# 设置代理IP中间件
+# 可以自己买服务器（阿布云）
+class MyProxy(object):
+    # 定义一个中间键类
+    # 用户代理
+    def process_request(self, request, spider):
+        request["proxy"] = '自己的数据'
+        proxy_name_pass = b'2222222'
+        encode_pass_name = base64.b64encode(proxy_name_pass)
+        request.headers['Proxy-Authorization'] = 'Basic' + encode_pass_name.decode()
+
+
+class MyUserAgent(object):
+
+    def process_request(self,request,spider):
+        user_agent = [
+            'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36',
+            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
+            'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.133 Safari/534.16']
+        request.headers['User-Agent'] = random.choice(user_agent)
